@@ -30,14 +30,21 @@ while :; do
   PART=$(printf "%s.part.%03d" "$ZIP" "$i")
   URL="$BASE_URL/$PART"
 
-  echo "Checking $PART"
-  if curl -fsI "$URL" >/dev/null 2>&1; then
-    echo "Downloading $PART"
-    curl -fsSL "$URL" -o "$PART"
-    i=$((i + 1))
-  else
+  echo "Downloading $PART"
+
+  if ! curl -fsSL "$URL" -o "$PART.tmp"; then
     break
   fi
+
+  # Stop if the downloaded file is suspiciously small (<1KB)
+  SIZE=$(wc -c < "$PART.tmp")
+  if [ "$SIZE" -lt 1024 ]; then
+    rm -f "$PART.tmp"
+    break
+  fi
+
+  mv "$PART.tmp" "$PART"
+  i=$((i + 1))
 done
 
 if [ "$i" -eq 0 ]; then
