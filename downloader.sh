@@ -36,9 +36,9 @@ while :; do
     break
   fi
 
-  # Stop if the downloaded file is suspiciously small (<1KB)
+  # Stop if the downloaded file is suspiciously small (<10KB)
   SIZE=$(wc -c < "$PART.tmp")
-  if [ "$SIZE" -lt 1024 ]; then
+  if [ "$SIZE" -lt 10024 ]; then
     rm -f "$PART.tmp"
     break
   fi
