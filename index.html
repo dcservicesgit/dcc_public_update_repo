@@ -1,118 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8" />
-  <title>DC CORE – Cluster Update Distribution</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="robots" content="noindex" />
-  <style>
-    :root {
-      --bg: #0f1115;
-      --fg: #e6e8eb;
-      --muted: #9aa0a6;
-      --accent: #4da3ff;
-      --border: #262a33;
-    }
+    <meta charset="utf-8" />
+    <title>DC CORE – Cluster Update Distribution</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <style>
+        :root {
+            --bg: #0f1115;
+            --fg: #e6e8eb;
+            --muted: #9aa0a6;
+            --accent: #4da3ff;
+            --border: #262a33;
+        }
 
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--fg);
-      line-height: 1.5;
-    }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.5;
+        }
 
-    .container {
-      max-width: 820px;
-      padding: 48px 24px;
-      margin: 0 auto;
-    }
+        .container {
+            max-width: 820px;
+            padding: 48px 24px;
+            margin: 0 auto;
+        }
 
-    h1 {
-      font-size: 1.9rem;
-      margin-bottom: 0.25em;
-    }
+        h1 {
+            font-size: 1.9rem;
+            margin-bottom: 0.25em;
+        }
 
-    h2 {
-      font-size: 1.1rem;
-      margin-top: 2.5em;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.3em;
-    }
+        h2 {
+            font-size: 1.1rem;
+            margin-top: 2.5em;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3em;
+        }
 
-    p {
-      color: var(--fg);
-      max-width: 70ch;
-    }
+        p {
+            max-width: 72ch;
+        }
 
-    .muted {
-      color: var(--muted);
-    }
+        .muted {
+            color: var(--muted);
+        }
 
-    code, pre {
-      background: #161922;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.6em 0.8em;
-      color: #d7dce2;
-      font-size: 0.95em;
-    }
+        code,
+        pre {
+            background: #161922;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.6em 0.8em;
+            color: #d7dce2;
+            font-size: 0.95em;
+        }
 
-    pre {
-      overflow-x: auto;
-    }
+        pre {
+            overflow-x: auto;
+        }
 
-    a {
-      color: var(--accent);
-      text-decoration: none;
-    }
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
 
-    footer {
-      margin-top: 4em;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-  </style>
+        footer {
+            margin-top: 4em;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+    </style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>DC CORE</h1>
-    <p class="muted">
-      Cluster Update Distribution Endpoint
-    </p>
+    <div class="container">
+        <h1>DC CORE</h1>
+        <p class="muted">
+            Cluster Update Distribution (CUD)
+        </p>
 
-    <p>
-      This site is used by <strong>DC CORE</strong> clusters to retrieve
-      versioned runtime artifacts and verify update integrity.
-      It is not intended for manual downloads or interactive use.
-    </p>
+        <p>
+            This endpoint provides <strong>immutable, versioned runtime artifacts</strong>
+            used by DC CORE clusters for controlled upgrades and bootstrap operations.
+            It is a <strong>static distribution system</strong> backed by a CDN and is not
+            intended for browsing, manual file downloads, or interactive use.
+        </p>
 
-    <h2>Automated Update Flow</h2>
-    <p>
-      Cluster nodes periodically check the update hash below.
-      When the value changes, nodes fetch the corresponding artifacts
-      and verify them using SHA-256 checksums.
-    </p>
+        <h2>What This System Is</h2>
+        <p>
+            The Cluster Update Distribution system exists to reliably deliver
+            runtime binaries to cluster nodes with minimal moving parts.
+            All artifacts are published as static files and verified by checksum
+            on the client before use.
+        </p>
 
-    <pre><code>GET /UPDATE_HASH.txt</code></pre>
+        <p>
+            There is no API, no authentication layer, and no server-side logic.
+            Trust is established through transport security (HTTPS) and
+            cryptographic integrity verification.
+        </p>
 
-    <h2>Integrity & Verification</h2>
-    <p>
-      All distributed artifacts are accompanied by SHA-256 checksum files.
-      Clients are expected to verify integrity prior to activation.
-    </p>
+        <h2>What This System Is Not</h2>
+        <p class="muted">
+            • Not a general-purpose download site<br />
+            • Not a package manager<br />
+            • Not intended for ad-hoc or manual artifact retrieval<br />
+            • Not guaranteed to maintain backwards-compatible layout
+        </p>
 
-    <pre><code>*.zip.sha256</code></pre>
+        <h2>Automated Update Flow</h2>
+        <p>
+            Cluster nodes periodically poll a single update marker.
+            When this value changes, the node initiates a controlled update
+            using the downloader script.
+        </p>
 
-    <h2>Usage Notice</h2>
-    <p class="muted">
-      This endpoint is part of internal infrastructure.
-      File layout and contents may change without notice.
-    </p>
+        <pre><code>GET /UPDATE_HASH.txt</code></pre>
 
-    <footer>
-      DC CORE · Static Distribution
-    </footer>
-  </div>
+        <p>
+            The update hash is used solely as a change signal. It does not encode
+            version metadata and should be treated as opaque.
+        </p>
+
+        <h2>Manual / Operational Usage</h2>
+        <p>
+            In rare operational scenarios (debugging, recovery, bootstrap),
+            staff may manually invoke the downloader.
+        </p>
+
+        <pre><code>curl -fsSL https://cud.dccore.io/downloader.sh | sh -s -- {binary}</code></pre>
+
+        <p class="muted">
+            This command downloads the required artifact in fixed-size chunks,
+            verifies its SHA-256 checksum, reconstructs the archive, and extracts
+            the binary locally.
+        </p>
+
+
+        <h2>Integrity & Verification</h2>
+        <p>
+            Every distributed artifact is accompanied by a SHA-256 checksum file.
+            Clients must verify integrity prior to execution or activation.
+        </p>
+
+        <pre><code>*.zip.sha256</code></pre>
+
+        <p>
+            If checksum verification fails, the update must be considered invalid
+            and should not be applied.
+        </p>
+
+        <h2>Security Model</h2>
+        <p>
+            This system assumes:
+        </p>
+
+        <p class="muted">
+            • Controlled publishing access<br />
+            • HTTPS transport integrity<br />
+            • Client-side checksum enforcement<br />
+            • Immutable artifacts per release
+        </p>
+
+        <p>
+            Do not mirror, modify, or re-host these files outside approved
+            infrastructure without explicit authorization.
+        </p>
+
+        <h2>Usage Notice</h2>
+        <p class="muted">
+            This endpoint is part of internal DC CORE infrastructure.
+            File names, formats, and update mechanisms may change without notice.
+            External dependencies should not rely on this interface.
+        </p>
+
+        <footer>
+            DC CORE · Cluster Update Distribution · Static Infrastructure
+        </footer>
+    </div>
 </body>
+
 </html>
